@@ -78,11 +78,8 @@ new BlueSpawn[3] = {120, 122, 11};
 
 // -------------------------------------------------------------
 // ----------------------- Funcs -------------------------------
-stock IsPlayerRequiredAdmin(playerid)
-{
-	if(IsPlayerAdmin(playerid)) return true;
-	else return false;
-}
+IsPlayerRequiredAdmin(playerid) return IsPlayerAdmin(playerid) ? true : false;
+
 stock StartEvent(times, killss)
 {
 	eData[isGoingOn] = 1;
@@ -95,6 +92,7 @@ stock StartEvent(times, killss)
 	Red[players] = 0;
 	Red[kills] = 0;
 	Blue[deaths] = 0;
+
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
 	    if(IsPlayerConnected(i))
@@ -104,6 +102,7 @@ stock StartEvent(times, killss)
 	        format(pData[i][team], 24, "None");
 	    }
 	}
+
 	SetTimer("EventJoinAble", 10000, false);
 	//SetTimer("TimeOver", times*1000*60, false);
 	TimeM = times-1;
@@ -111,6 +110,7 @@ stock StartEvent(times, killss)
 	Time = SetTimer("UpdateTime", 1000, true);
 	SendClientMessageToAll(-1, "[EVENT] Event has been started, type /joinevent before joining is closed!");
 }
+
 forward UpdateTime();
 public UpdateTime()
 {
@@ -178,7 +178,7 @@ stock AddPlayerToEvent(playerid)
 	    Red[players]++;
 	    format(pData[playerid][team], 24, "Red");
 		TextDrawShowForPlayer(playerid, Textdraw0);
-		  TogglePlayerControllable(playerid,0);
+	  	TogglePlayerControllable(playerid,0);
 	}
 }
 
@@ -227,28 +227,23 @@ stock CheckForEvent(killerid)
 }
 stock StopEvent()
 {
-    eData[isGoingOn] = 0;
-	eData[time] = 0;
-	eData[killsLimit] = 0;
-	Blue[players] = 0;
-	Blue[kills] = 0;
-	Blue[deaths] = 0;
-	Red[players] = 0;
-	Red[kills] = 0;
-	Blue[deaths] = 0;
+	new tempdata[data];
+	eData = tempdata; //Changed to capital D as was incorrect, this resets all variables in eData, instead of listing them all
+    
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    if(IsPlayerConnected(i))
-	    {
-	        if(strcmp(pData[team], "Blue", true) == 0 || strcmp(pData[team], "Red", true) == 0)
-			{
-			    SpawnPlayer(i);
-			    TextDrawHideForPlayer(i, Textdraw0);
-			}
-	        pData[i][kill] = 0;
-	        pData[i][death] = 0;
-	        format(pData[i][team], 24, "None");
-	    }
+	    if(!IsPlayerConnected(i)) continue; // If players not connected, goto next ID
+	    
+        if(strcmp(pData[team], "Blue", true) == 0 || strcmp(pData[team], "Red", true) == 0)
+		{
+		    SpawnPlayer(i);
+		    TextDrawHideForPlayer(i, Textdraw0);
+		}
+
+        pData[i][kill] = 0;
+        pData[i][death] = 0;
+        format(pData[i][team], 24, "None");
+	    
 	}
 	KillTimer(Time);
 }
@@ -271,7 +266,7 @@ CMD:joinevent(playerid, params[])
 }
 CMD:stopevent(playerid, params[])
 {
-	if(!IsPlayerRequiredAdmin(playerid)) return SendClientMessage(playerid, -1, "[ERROR] You arent an admin too stop!");
+	if(!IsPlayerRequiredAdmin(playerid)) return SendClientMessage(playerid, -1, "[ERROR] You aren't an admin too stop!");
 	if(eData[isGoingOn] == 0) return SendClientMessage(playerid, -1, "NO Event Going on!");
 	StopEvent();
 	SendClientMessageToAll(-1, "[EVENT] Event has been stopped by an admin!");
